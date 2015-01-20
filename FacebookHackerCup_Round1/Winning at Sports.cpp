@@ -58,14 +58,3 @@ int main(){
 	}
 	return 0;
 }
-/*
-stressful : dp
-dp[k][x] = dp[k-1][x] 
-dp[k][x] += dp[k-1][x-1] 
-dp[1][0] = 1;
-
-stressfree : dp
-x>k-x
-dp[k][x] += dp[k-1][x]
-dp[k][x] += dp[k-1][x-1] if x-1>k-x && x>0
-*/
