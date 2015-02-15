@@ -43,5 +43,5 @@ Temporary Items
 .apdisk
 
 *.exe
-acm/*
+/acm
 *.txt
