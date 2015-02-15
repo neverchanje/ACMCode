@@ -1,86 +1,99 @@
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <algorithm>
+#include <vector>
+#include <stack>
+
 using namespace std;
 
-int n;
+int n, k;
+const int maxn = 10005;
 
-const int maxn = 1000 + 5;
-string str[maxn];
+int cluster[maxn];
 
-struct TrieNode{
-	int val;
-	TrieNode* ch[26];
+int si, c;
 
-	TrieNode()
-	{
-		val = 1;
-		for(int i=0; i<26; i++)
-			ch[i] = NULL;
-	}
-};
+stack<int> seq;
 
-struct Trie{
-	TrieNode* root;
+int main()
+{
+	freopen("a.txt", "r", stdin);
 
-	Trie() {
-		root = new TrieNode();
-	}
+    while(cin>>n>>k){
 
-	int getId(char x) {
-		return x-'a';
-	}
+		bool need_optimalize = false;
 
-	void insert(string s)
-	{
-		TrieNode *p = root;
-		int i=0;
-		while(i < s.length()){
-			int id = getId(s[i]);
-			if(p->ch[id] == NULL)
-			{
-				p->ch[ id ] = new TrieNode();
-			}
-			else
-			{
-				( p->ch[ id ]->val )++;
-			}
-			p = p->ch[ id ];
-			i++;
-		}
-	}
+        memset(cluster, 0, sizeof(cluster));
 
-	int find(const string& s){
-		TrieNode *p = root;
-		int i=0; 
-		while(i < s.length()){
-			int id = getId(s[i]);
-			p = p->ch[ id ];
+        int cnt = 0;
+        for(int i=0; i<k; i++)
+        {
+            cin>>si;
+            for(int j=0; j<si; j++)
+            {
+                cin>>c;
+                cluster[c] = ++cnt;
+            }
+        }
 
-			i++;
-			if( p->val == 1)
-				break;
-		}
-		return i;
-	}
-};
+        while (!seq.empty())
+            seq.pop();
 
-int main(){
-//	freopen("a.txt", "r", stdin);
+        for(int ii=1; ii<=n; ii++)
+        {
+            if(!cluster[ii])
+                continue;
+            
+            //j是目标位置
+            int j = cluster[ii];
+            //目标位置是空的，直接放进去
+            if(!cluster[j])
+            {
+                if(!need_optimalize)
+                    need_optimalize = true;
+                cluster[ii] = 0;
+                cluster[j] = j;
+                printf("%d %d\n", ii, j);
+                continue;
+            }
+            
+            //当目标位置被占用时（cluster[j]>0），意味着遇到链或者循环
+            if(ii != cluster[ii])
+            {
+                if(!need_optimalize) need_optimalize = true;
+                
+                seq.push(ii);
+                int i = cluster[ii];
+                cluster[ii] = ii;
+                while(ii != i && i != 0)
+                {
+                    seq.push(i);
+                    int k = cluster[i];
+                    cluster[i] = i;
+                    i = k;
 
-	Trie trie = Trie();
-	int n=0;
-	while(cin>>str[n]){
-		trie.insert(str[n]);
-		n++;
-	}
+                    if(ii == i)
+                    {
+                        printf("%d %d\n", seq.top(), n);
+                    }
+                }
+                
+                while(seq.size() > 1)
+                {
+                    int k = seq.top();
+                    seq.pop();
+                    printf("%d %d\n", seq.top(), k);
+                }
+                
+                if(ii == i)	printf("%d %d\n", n, seq.top());
+                else cluster[seq.top()] = 0; //是链的话要记得留一个空位
+                if(!seq.empty()) seq.pop();
+                continue;
+            }
+        }
 
-	for(int i=0; i<n; i++)
-	{
-		int ans = trie.find(str[i]);
-		cout<<str[i]<<" "<<str[i].substr(0, ans)<<endl;
-	}
-
-	return 0;
+        if(!need_optimalize)
+            puts("No optimization needed");
+    }
+    return 0;
 }
