@@ -15,3 +15,8 @@ a^p = a (mod m) // a%p != 0
             = a^(x-x/(m-1)*(m-1))
             = a^(x%(m-1))
 
+D(n), the number of divisors of n
+n = p1^x1 + p2^x2 + p3^x3 ... + pk^xk
+
+===> 1. D(n) = (x1+1) * (x2+1) * (x3+1) * ... * (xk+1)
+===> 2. D(ab) = D(a) * D(b)
